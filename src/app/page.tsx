@@ -34,17 +34,45 @@ console.info(videoFile)
   const handleLocalRender = async () => {
     setIsRendering(true);
     try {
-      const response = await fetch("/api/render/local", {
+      const requestId = `${Date.now()}`;
+      let timeoutId: NodeJS.Timeout | null = null;
+      
+      // Start the render process
+      const promise = fetch("/api/render/local", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ subtitles }),
+        body: JSON.stringify({ subtitles, requestId }),
       });
 
+      // Poll for progress while rendering
+      const pollProgress = async () => {
+        try {
+          const progressResponse = await fetch(`/api/render/local/progress?requestId=${requestId}`);
+          if (progressResponse.ok) {
+            const progress = await progressResponse.json();
+            console.log(`Rendering progress: ${progress.percentage}%`);
+            
+            // Continue polling if not complete
+            if (progress.progress < 1) {
+              timeoutId = setTimeout(pollProgress, 5_000);
+            }
+          }
+        } catch (error) {
+          console.error('Progress polling error:', error);
+        }
+      };
+
+      // Start polling for progress
+      pollProgress();
+
+      const response = await promise;
+      if (timeoutId) clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
 
       // Get the video blob
       const videoBlob = await response.blob();

@@ -18,22 +18,21 @@ export async function POST(request: NextRequest) {
     const tmpDir = path.join(process.cwd(), "tmp");
     await fs.mkdir(tmpDir, { recursive: true });
 
-    // Generate unique output path
-    const outputPath = path.join(tmpDir, `output-${Date.now()}.mp4`);
-    const inputPropsPath = path.join(tmpDir, `input-${Date.now()}.json`);
+    // Generate unique output path and progress file
+    const outputPath = path.join(tmpDir, `output-${inputProps.requestId}.mp4`);
+    const inputPropsPath = path.join(tmpDir, `input-${inputProps.requestId}.json`);
+    const progressPath = path.join(tmpDir, `progress-${inputProps.requestId}.json`);
     
     // Write input props to a temporary file to avoid shell interpretation issues
     await fs.writeFile(inputPropsPath, JSON.stringify(inputProps, null, 2));
 
     console.log('---------------------------')
-    console.log('subtitles', inputProps.subtitles.length)
-    console.log('---------------------------')
-    console.log('Input props written to:', inputPropsPath)
+    console.log('Progress will be written to:', progressPath)
     console.log('---------------------------')
     
     // Run the rendering script with file path instead of JSON string
     const scriptPath = path.join(process.cwd(), "scripts/render-local.js");
-    await execAsync(`node ${scriptPath} '${inputPropsPath}' '${outputPath}'`);
+    await execAsync(`node ${scriptPath} '${inputPropsPath}' '${outputPath}' '${progressPath}'`);
 
     // Read the generated video file
     const videoBuffer = await fs.readFile(outputPath);
@@ -41,6 +40,11 @@ export async function POST(request: NextRequest) {
     // Clean up the temporary files
     await fs.unlink(outputPath);
     await fs.unlink(inputPropsPath);
+    try {
+      await fs.unlink(progressPath);
+    } catch {
+      // Progress file might not exist, ignore error
+    }
 
     // Return the video as a response
     return new NextResponse(videoBuffer, {

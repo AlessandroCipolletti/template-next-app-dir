@@ -9,10 +9,12 @@ export const CompositionProps = z.object({
     start: z.number(),
     end: z.number(),
   })),
+  requestId: z.string(),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   subtitles: [],
+  requestId: '123',
 };
 
 // export const DURATION_IN_FRAMES = 200;

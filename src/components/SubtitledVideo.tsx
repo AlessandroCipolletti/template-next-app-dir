@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion'
 import { Subtitle } from '../types/constants'
 import { loadFont, fontFamily } from "@remotion/google-fonts/Inter";
 
@@ -26,7 +26,8 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
     const chunks: Subtitle[][] = []
     let currentChunk: Subtitle[] = []
 
-    for (const word of subtitles) {
+    for (let i = 0; i < subtitles.length; i++) {
+      const word = subtitles[i]
       currentChunk.push(word)
 
       // Check if the word ends with punctuation that should end the chunk
@@ -40,7 +41,7 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
       } else if (currentChunk.length > 0) {
         // Check if there's a gap of more than 0.5 seconds to the next word
         const currentEnd = currentChunk[currentChunk.length - 1].end
-        const nextWord = subtitles[subtitles.indexOf(word) + 1]
+        const nextWord = subtitles[i + 1]
         if (nextWord && nextWord.start - currentEnd > 0.5) {
           chunks.push([...currentChunk])
           currentChunk = []
@@ -64,11 +65,11 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
   const wordChunks = groupWordsIntoChunks(subtitles)
 
   // Find the current chunk being displayed - simplified and deterministic logic
-  const currentChunk = wordChunks.find((chunk) => {
-    const chunkStart = chunk[0]?.start || 0
-    const chunkEnd = chunk[chunk.length - 1]?.end || 0
-    return t >= chunkStart && t <= chunkEnd
-  }) || []
+  const currentChunk = wordChunks.find(chunk => {
+    const chunkStart = chunk[0]?.start ?? 0;
+    const chunkEnd = chunk[chunk.length - 1]?.end ?? 0;
+    return t >= chunkStart && t <= chunkEnd;
+  }) || [];
 
   return (
     <AbsoluteFill>
@@ -92,24 +93,41 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
             textAlign: 'center',
           }}
         >
-          {currentChunk.map((word) => (
-            <span
-              key={`${word.text}-${word.start}-${word.end}`}
-              style={{
-                margin: '0 0px',
-                padding: '0px 20px',
-                borderRadius: '8px',
-                fontFamily,
-                backgroundColor:
-                  word.start <= t && word.end >= t
-                    ? 'rgba(255, 255, 0, 0.7)'
-                    : 'transparent',
-                transition: 'background-color 0.1s ease-in-out',
-              }}
-            >
-              {cleanWordText(word.text)}
-            </span>
-          ))}
+          {currentChunk.map((word) => {
+            const wordStartFrame = Math.floor(word.start * fps)
+            const wordEndFrame = Math.max(Math.ceil(word.end * fps), wordStartFrame + 7)
+            
+            // Fade in/out del background usando interpolate
+            const backgroundOpacity = interpolate(
+              f,
+              [wordStartFrame, wordStartFrame + 3, wordEndFrame - 3, wordEndFrame],
+              [0, 0.7, 0.7, 0],
+              {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+              }
+            )
+
+            return (
+              <span
+                key={`${word.text}-${word.start}-${word.end}`}
+                style={{
+                  margin: '0 0px',
+                  padding: '0px 20px',
+                  borderRadius: '8px',
+                  fontFamily,
+                  backgroundColor: `rgba(255, 255, 0, ${backgroundOpacity})`,
+                  // backgroundColor:
+                  //   word.start <= t && word.end >= t
+                  //     ? 'rgba(255, 255, 0, 0.7)'
+                  //     : 'transparent',
+                  // transition: 'background-color 0.1s ease-in-out',
+                }}
+              >
+                {cleanWordText(word.text)}
+              </span>
+            )
+          })}
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

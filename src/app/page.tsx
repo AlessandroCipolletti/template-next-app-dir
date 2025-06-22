@@ -25,6 +25,7 @@ const Page: FC = () => {
   } | null>(null)
   const [frame, setFrame] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
+console.info(videoFile)
 
   const durationInFrames = meta ? Math.ceil(meta.duration * fps) : 0
 

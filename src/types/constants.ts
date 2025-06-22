@@ -1,15 +1,29 @@
 import { z } from "zod";
 export const COMP_NAME = "MyComp";
+import text_subtitles from '../app/text_subtitles.json'
+
+export type Subtitle = { text: string; start: number; end: number }
 
 export const CompositionProps = z.object({
-  title: z.string(),
+  subtitles: z.array(z.object({
+    text: z.string(),
+    start: z.number(),
+    end: z.number(),
+  })),
 });
 
+const subtitles: Subtitle[] = text_subtitles.words.filter((w) => w.text.trim() !== '')
+
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
-  title: "Next.js and Remotion",
+  subtitles: [],
 };
 
-export const DURATION_IN_FRAMES = 200;
-export const VIDEO_WIDTH = 1280;
-export const VIDEO_HEIGHT = 720;
+// export const DURATION_IN_FRAMES = 200;
+// export const VIDEO_WIDTH = 1280;
+// export const VIDEO_HEIGHT = 720;
+
+export const DURATION_IN_FRAMES = 212*30;
+export const VIDEO_WIDTH = 1080;
+export const VIDEO_HEIGHT = 1920;
+
 export const VIDEO_FPS = 30;

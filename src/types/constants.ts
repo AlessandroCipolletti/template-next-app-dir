@@ -9,22 +9,34 @@ export const CompositionProps = z.object({
     start: z.number(),
     end: z.number(),
   })),
-  requestId: z.string(),
   videoSrc: z.string(),
+  // Dynamic video parameters
+  width: z.number().default(1080),
+  height: z.number().default(1080),
+  durationInFrames: z.number(),
+  fps: z.number().default(30),
+});
+
+export const RenderRequestSchema = z.object({
+  subtitles: z.array(z.object({
+    text: z.string(),
+    start: z.number(),
+    end: z.number(),
+  })),
+  videoSrc: z.string(),
+  requestId: z.string(),
+  // Dynamic video parameters
+  width: z.number().default(1080),
+  height: z.number().default(1080),
+  durationInFrames: z.number(),
+  fps: z.number().default(30),
 });
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   subtitles: [],
-  requestId: '123',
   videoSrc: '',
+  width: 1080,
+  height: 1080,
+  durationInFrames: 120*30,
+  fps: 30,
 };
-
-// export const DURATION_IN_FRAMES = 200;
-// export const VIDEO_WIDTH = 1280;
-// export const VIDEO_HEIGHT = 720;
-
-export const DURATION_IN_FRAMES = 212*30;
-export const VIDEO_WIDTH = 1080;
-export const VIDEO_HEIGHT = 1920;
-
-export const VIDEO_FPS = 30;

@@ -3,11 +3,9 @@ import path from "path";
 import fs from "fs/promises";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { CompositionProps } from "../../../../types/constants";
+import { RenderRequestSchema } from "../../../../types/constants";
 
 const execAsync = promisify(exec);
-
-const RenderRequestSchema = CompositionProps;
 
 export async function POST(request: NextRequest) {
   try {

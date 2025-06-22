@@ -1,13 +1,9 @@
 import { Composition } from "remotion";
+import { SubtitledVideo } from "../components/SubtitledVideo";
 import {
   COMP_NAME,
   defaultMyCompProps,
-  DURATION_IN_FRAMES,
-  VIDEO_FPS,
-  VIDEO_HEIGHT,
-  VIDEO_WIDTH,
 } from "../types/constants";
-import { SubtitledVideo } from "../components/SubtitledVideo";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -15,10 +11,10 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id={COMP_NAME}
         component={SubtitledVideo}
-        durationInFrames={DURATION_IN_FRAMES}
-        fps={VIDEO_FPS}
-        width={VIDEO_WIDTH}
-        height={VIDEO_HEIGHT}
+        durationInFrames={defaultMyCompProps.durationInFrames}
+        fps={defaultMyCompProps.fps}
+        width={defaultMyCompProps.width}
+        height={defaultMyCompProps.height}
         defaultProps={defaultMyCompProps}
       />
     </>

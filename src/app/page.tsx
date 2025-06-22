@@ -37,17 +37,38 @@ console.info(videoFile)
       const requestId = `${Date.now()}`;
       let timeoutId: NodeJS.Timeout | null = null;
       
+      // Get video metadata for dynamic parameters
+      const videoMetadata = meta ? {
+        width: meta.width,
+        height: meta.height,
+        durationInFrames: Math.ceil(meta.duration * fps),
+        fps: fps
+      } : {
+        width: 1080,
+        height: 1920,
+        durationInFrames: 212 * 30,
+        fps: 30
+      };
+      
+      // Prepare the request data with dynamic parameters
+      const requestData = {
+        subtitles,
+        videoSrc: 'https://argoseyes.s3-accelerate.amazonaws.com/development/situations/804b04f6-bf3d-4e54-9ee5-84be0caa0e18.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAS5Z5FDA4KOFQ5V4V%2F20250622%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250622T202150Z&X-Amz-Expires=43200&X-Amz-Signature=eda5f3dfdee3e8b0013d1750ea59f048054e938be915548953ded9868d079a8d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject',
+        requestId,
+        ...videoMetadata,
+        height: 1080,
+        // width: 1920,
+        // durationInFrames: 212 * 30,
+        // fps: 30,
+      };
+      
       // Start the render process
       const promise = fetch("/api/render/local", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          subtitles,
-          videoSrc: 'https://argoseyes.s3-accelerate.amazonaws.com/development/situations/804b04f6-bf3d-4e54-9ee5-84be0caa0e18.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAS5Z5FDA4KOFQ5V4V%2F20250622%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250622T202150Z&X-Amz-Expires=43200&X-Amz-Signature=eda5f3dfdee3e8b0013d1750ea59f048054e938be915548953ded9868d079a8d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject',
-          requestId,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       // Poll for progress while rendering

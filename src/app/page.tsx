@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic'
 import { Player, PlayerRef } from '@remotion/player'
 import text_subtitles from './text_subtitles.json'
 import { SubtitledVideo } from '../components/SubtitledVideo'
-import { Button } from "../components/Button/Button";
 import { Subtitle } from '../types/constants'
 
 
@@ -197,13 +196,12 @@ const Page: FC = () => {
             {isPlaying ? 'Pause' : 'Play'}
           </button>
           
-          <Button
+          <button
             onClick={handleLocalRender}
             disabled={isRendering}
-            loading={isRendering}
           >
             {isRendering ? "Rendering locally..." : "Render locally"}
-          </Button>
+          </button>
 
           <input
             type="range"

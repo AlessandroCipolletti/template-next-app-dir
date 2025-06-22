@@ -1,6 +1,5 @@
 import { z } from "zod";
 export const COMP_NAME = "MyComp";
-import text_subtitles from '../app/text_subtitles.json'
 
 export type Subtitle = { text: string; start: number; end: number }
 
@@ -11,8 +10,6 @@ export const CompositionProps = z.object({
     end: z.number(),
   })),
 });
-
-const subtitles: Subtitle[] = text_subtitles.words.filter((w) => w.text.trim() !== '')
 
 export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   subtitles: [],

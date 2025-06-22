@@ -18,9 +18,18 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
       inputProps,
     });
 
-    // Render the video
+    // Override composition parameters with dynamic values from inputProps
+    const dynamicComposition = {
+      ...composition,
+      width: inputProps.width,
+      height: inputProps.height,
+      durationInFrames: inputProps.durationInFrames,
+      fps: inputProps.fps,
+    };
+
+    // Render the video with dynamic composition
     await renderMedia({
-      composition,
+      composition: dynamicComposition,
       serveUrl: bundled,
       codec: "h264",
       outputLocation: outputPath,

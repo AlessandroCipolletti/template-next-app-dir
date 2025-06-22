@@ -36,7 +36,7 @@ export const defaultMyCompProps: z.infer<typeof CompositionProps> = {
   subtitles: [],
   videoSrc: '',
   width: 1080,
-  height: 1080,
+  height: 1920,
   durationInFrames: 120*30,
   fps: 30,
 };

@@ -21,6 +21,9 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
   const { fps } = useVideoConfig()
   const t = f / fps
 
+  // Check if we're in a server-side rendering context
+  const isServerRendering = typeof window === 'undefined' || process.env.NODE_ENV === 'production'
+
   // Group words into sentences/chunks of 3-4 words
   const groupWordsIntoChunks = (subtitles: Subtitle[]): Subtitle[][] => {
     const chunks: Subtitle[][] = []
@@ -97,16 +100,22 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
             const wordStartFrame = Math.floor(word.start * fps)
             const wordEndFrame = Math.max(Math.ceil(word.end * fps), wordStartFrame + 7)
             
-            // Fade in/out del background usando interpolate
-            const backgroundOpacity = interpolate(
-              f,
-              [wordStartFrame, wordStartFrame + 3, wordEndFrame - 3, wordEndFrame],
-              [0, 0.7, 0.7, 0],
-              {
-                extrapolateLeft: 'clamp',
-                extrapolateRight: 'clamp',
-              }
-            )
+            let backgroundOpacity = 0
+            if (isServerRendering) {
+              backgroundOpacity = interpolate(
+                  f,
+                  [wordStartFrame, wordStartFrame + 3, wordEndFrame - 3, wordEndFrame],
+                  [0, 0.7, 0.7, 0],
+                  {
+                    extrapolateLeft: 'clamp',
+                    extrapolateRight: 'clamp',
+                  }
+                )
+            } else if (word.start <= t && word.end >= t) {
+              backgroundOpacity = 0.7
+            } else {
+              backgroundOpacity = 0
+            }
 
             return (
               <span
@@ -117,11 +126,7 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
                   borderRadius: '8px',
                   fontFamily,
                   backgroundColor: `rgba(255, 255, 0, ${backgroundOpacity})`,
-                  // backgroundColor:
-                  //   word.start <= t && word.end >= t
-                  //     ? 'rgba(255, 255, 0, 0.7)'
-                  //     : 'transparent',
-                  // transition: 'background-color 0.1s ease-in-out',
+                  ...(isServerRendering ? {} : { transition: 'background-color 0.1s ease-in-out' }),
                 }}
               >
                 {cleanWordText(word.text)}

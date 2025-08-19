@@ -4,7 +4,7 @@ import { Subtitle } from '../types/constants'
 import { loadFont, fontFamily } from "@remotion/google-fonts/Inter";
 
 export type SubtitledVideoProps = {
-  videoSrc: string
+  videoSrc?: string
   subtitles: Subtitle[]
 }
 

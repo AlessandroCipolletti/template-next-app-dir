@@ -37,18 +37,21 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
       onProgress: async (progress) => {
         const percentage = Math.round(progress.progress * 100);
         console.log(`Rendering progress: ${percentage}%`);
-        
+
         // Write progress to file for API route to read
         try {
-          await fs.writeFile(progressPath, JSON.stringify({
-            progress: progress.progress,
-            percentage,
-            renderedFrames: progress.renderedFrames,
-            encodedFrames: progress.encodedFrames,
-            timestamp: Date.now()
-          }));
+          await fs.writeFile(
+            progressPath,
+            JSON.stringify({
+              progress: progress.progress,
+              percentage,
+              renderedFrames: progress.renderedFrames,
+              encodedFrames: progress.encodedFrames,
+              timestamp: Date.now(),
+            }),
+          );
         } catch (error) {
-          console.error('Failed to write progress file:', error);
+          console.error("Failed to write progress file:", error);
         }
       },
     });
@@ -64,12 +67,14 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const inputPropsPath = process.argv[2];
   const outputPath = process.argv[3];
-  const progressPath = process.argv[4] || path.join(process.cwd(), "tmp", `progress-${Date.now()}.json`);
-  
+  const progressPath =
+    process.argv[4] ||
+    path.join(process.cwd(), "tmp", `progress-${Date.now()}.json`);
+
   // Read input props from file
-  const inputPropsJson = await fs.readFile(inputPropsPath, 'utf8');
+  const inputPropsJson = await fs.readFile(inputPropsPath, "utf8");
   const inputProps = JSON.parse(inputPropsJson);
-  
+
   renderVideoLocally(inputProps, outputPath, progressPath)
     .then(() => {
       console.log(`Video rendered successfully to: ${outputPath}`);
@@ -81,4 +86,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     });
 }
 
-export { renderVideoLocally }; 
+export { renderVideoLocally };

@@ -1,20 +1,20 @@
-import { renderMedia, selectComposition } from "@remotion/renderer";
-import { bundle } from "@remotion/bundler";
-import path from "path";
-import fs from "fs/promises";
+import { renderMedia, selectComposition } from '@remotion/renderer';
+import { bundle } from '@remotion/bundler';
+import path from 'path';
+import fs from 'fs/promises';
 
 async function renderVideoLocally(inputProps, outputPath, progressPath) {
   try {
     // Bundle the Remotion composition
     const bundled = await bundle({
-      entryPoint: path.join(process.cwd(), "src/remotion/index.ts"),
+      entryPoint: path.join(process.cwd(), 'src/remotion/index.ts'),
       webpackOverride: (config) => config,
     });
 
     // Get composition details
     const composition = await selectComposition({
       serveUrl: bundled,
-      id: "MyComp",
+      id: 'MyComp',
       inputProps,
     });
 
@@ -31,7 +31,7 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
     await renderMedia({
       composition: dynamicComposition,
       serveUrl: bundled,
-      codec: "h264",
+      codec: 'h264',
       outputLocation: outputPath,
       inputProps,
       onProgress: async (progress) => {
@@ -51,14 +51,14 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
             }),
           );
         } catch (error) {
-          console.error("Failed to write progress file:", error);
+          console.error('Failed to write progress file:', error);
         }
       },
     });
 
     return true;
   } catch (error) {
-    console.error("Rendering error:", error);
+    console.error('Rendering error:', error);
     throw error;
   }
 }
@@ -69,10 +69,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const outputPath = process.argv[3];
   const progressPath =
     process.argv[4] ||
-    path.join(process.cwd(), "tmp", `progress-${Date.now()}.json`);
+    path.join(process.cwd(), 'tmp', `progress-${Date.now()}.json`);
 
   // Read input props from file
-  const inputPropsJson = await fs.readFile(inputPropsPath, "utf8");
+  const inputPropsJson = await fs.readFile(inputPropsPath, 'utf8');
   const inputProps = JSON.parse(inputPropsJson);
 
   renderVideoLocally(inputProps, outputPath, progressPath)
@@ -81,7 +81,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       process.exit(0);
     })
     .catch((error) => {
-      console.error("Failed to render video:", error);
+      console.error('Failed to render video:', error);
       process.exit(1);
     });
 }

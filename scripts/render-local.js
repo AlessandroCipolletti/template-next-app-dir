@@ -31,8 +31,7 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
     await renderMedia({
       composition: dynamicComposition,
       serveUrl: bundled,
-      codec: 'prores',
-      proResProfile: '4444', // Supporta il canale alpha per background trasparente
+      codec: 'h264',
       outputLocation: outputPath,
       inputProps,
       onProgress: async (progress) => {

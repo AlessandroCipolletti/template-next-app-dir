@@ -25,9 +25,6 @@ export async function POST(request: NextRequest) {
     inputPropsPath = path.join(tmpDir, `input-${inputProps.requestId}.json`);
     progressPath = path.join(tmpDir, `progress-${inputProps.requestId}.json`);
 
-    const backgroundVideoSrc = inputProps.videoSrc;
-    delete inputProps.videoSrc;
-
     // Write input props to a temporary file to avoid shell interpretation issues
     await fs.writeFile(inputPropsPath, JSON.stringify(inputProps, null, 2));
 
@@ -43,8 +40,8 @@ export async function POST(request: NextRequest) {
     // Return the video as a response
     return new NextResponse(videoBuffer, {
       headers: {
-        'Content-Type': 'video/quicktime',
-        'Content-Disposition': 'attachment; filename=video.mov',
+        'Content-Type': 'video/mp4',
+        'Content-Disposition': 'attachment; filename=video.mp4',
       },
     });
   } catch (error) {

@@ -1,0 +1,39 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact"
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.validate.enable": true,
+  "javascript.validate.enable": true,
+  "eslint.workingDirectories": ["./src"],
+  "eslint.enable": true,
+  "eslint.run": "onSave",
+  "files.autoSave": "off",
+  "editor.codeLens": false,
+
+  "workbench.tree.renderIndentGuides": "none",
+  "editor.guides.indentation": true,
+  "editor.guides.highlightActiveIndentation": "always",
+  "editor.autoIndent": "advanced",
+  "editor.wrappingIndent": "none",
+  "workbench.tree.indent": 8,
+  "editor.smartSelect.selectLeadingAndTrailingWhitespace": true,
+  "editor.trimAutoWhitespace": true,
+  "diffEditor.ignoreTrimWhitespace": true,
+  "files.trimTrailingWhitespaceInRegexAndStrings": true,
+  "editor.experimentalWhitespaceRendering": "svg",
+  "editor.renderWhitespace": "none",
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.editor.decorations.colors": true,
+  "workbench.settings.editor": "ui",
+  "workbench.colorCustomizations": {
+    "editorWhitespace.foreground": "#00000000"
+  }
+}

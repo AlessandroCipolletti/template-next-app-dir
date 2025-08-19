@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     await fs.mkdir(tmpDir, { recursive: true });
 
     // Generate unique output path and progress file
-    outputPath = path.join(tmpDir, `output-${inputProps.requestId}.mov`);
+    outputPath = path.join(tmpDir, `output-${inputProps.requestId}.mp4`);
     inputPropsPath = path.join(tmpDir, `input-${inputProps.requestId}.json`);
     progressPath = path.join(tmpDir, `progress-${inputProps.requestId}.json`);
 

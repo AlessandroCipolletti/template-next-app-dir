@@ -9,7 +9,7 @@ export const CompositionProps = z.object({
     start: z.number(),
     end: z.number(),
   })),
-  videoSrc: z.string(),
+  videoSrc: z.string().optional(),
   // Dynamic video parameters
   width: z.number().default(1080),
   height: z.number().default(1080),
@@ -23,7 +23,7 @@ export const RenderRequestSchema = z.object({
     start: z.number(),
     end: z.number(),
   })),
-  videoSrc: z.string(),
+  videoSrc: z.string().optional(),
   requestId: z.string(),
   // Dynamic video parameters
   width: z.number().default(1080),

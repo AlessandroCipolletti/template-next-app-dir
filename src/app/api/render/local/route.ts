@@ -8,6 +8,10 @@ import { RenderRequestSchema } from "../../../../types/constants";
 const execAsync = promisify(exec);
 
 export async function POST(request: NextRequest) {
+  let outputPath: string = '';
+  let inputPropsPath: string = '';
+  let progressPath: string = '';
+
   try {
     const body = await request.json();
     const inputProps = RenderRequestSchema.parse(body);
@@ -17,9 +21,9 @@ export async function POST(request: NextRequest) {
     await fs.mkdir(tmpDir, { recursive: true });
 
     // Generate unique output path and progress file
-    const outputPath = path.join(tmpDir, `output-${inputProps.requestId}.mp4`);
-    const inputPropsPath = path.join(tmpDir, `input-${inputProps.requestId}.json`);
-    const progressPath = path.join(tmpDir, `progress-${inputProps.requestId}.json`);
+    outputPath = path.join(tmpDir, `output-${inputProps.requestId}.mov`);
+    inputPropsPath = path.join(tmpDir, `input-${inputProps.requestId}.json`);
+    progressPath = path.join(tmpDir, `progress-${inputProps.requestId}.json`);
     
     // Write input props to a temporary file to avoid shell interpretation issues
     await fs.writeFile(inputPropsPath, JSON.stringify(inputProps, null, 2));
@@ -31,15 +35,6 @@ export async function POST(request: NextRequest) {
     // Read the generated video file
     const videoBuffer = await fs.readFile(outputPath);
     
-    // Clean up the temporary files
-    await fs.unlink(outputPath);
-    await fs.unlink(inputPropsPath);
-    try {
-      await fs.unlink(progressPath);
-    } catch {
-      // Progress file might not exist, ignore error
-    }
-
     // Return the video as a response
     return new NextResponse(videoBuffer, {
       headers: {
@@ -54,5 +49,13 @@ export async function POST(request: NextRequest) {
       { error: "Failed to render video", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
+  } finally {
+    try {
+      await fs.unlink(outputPath);
+      await fs.unlink(inputPropsPath);
+      await fs.unlink(progressPath);
+    } catch {
+      // Output file might not exist, ignore error
+    }
   }
 } 

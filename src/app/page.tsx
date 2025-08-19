@@ -52,7 +52,7 @@ const Page: FC = () => {
       // Prepare the request data with dynamic parameters
       const requestData = {
         subtitles,
-        videoSrc: 'https://argoseyes.s3-accelerate.amazonaws.com/development/situations/804b04f6-bf3d-4e54-9ee5-84be0caa0e18.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAS5Z5FDA4KOFQ5V4V%2F20250622%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250622T202150Z&X-Amz-Expires=43200&X-Amz-Signature=eda5f3dfdee3e8b0013d1750ea59f048054e938be915548953ded9868d079a8d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject',
+        videoSrc: 'https://argoseyes.s3.eu-west-3.amazonaws.com/development/situations/804b04f6-bf3d-4e54-9ee5-84be0caa0e18.mp4?response-content-disposition=inline&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHQaCWV1LXdlc3QtMyJHMEUCIEvZXB1vqKSqkMlh2CPuc9Nm9zQchU8RRM9dtzlsjXfHAiEAgy8ddxOx0aVU4WMlDW1I4R3Iq1ot%2BKoaNYnSNF64Oo0q1QMIvf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARABGgwyMDE0NTQ4NTIxNTIiDDIMfls8AtAeZ6EugiqpA8xFldvAyHMM1EIzoJY%2Bx1hVZIZyosgns93VI3YWau8qGqzVz4rLStavrHVQCU17ZluPysMg1eFaK9cUdqsy3OiowzThEBJwW%2FBin%2B7siWochy5jjLwOB2aqa0he153hVT4%2FCbgoi8nos4gE%2BVAaqAPy91CvNXaZC5yqCjA%2F%2BxkHO7U09bbFdYxQsBxaK33MD3Pq%2BnDIsx%2Fm863NcEdMgkYrwWsbbkqTJIGaxSnVMcPY7NtphtWrv8nZtH%2BmWQG57pKjJfwovNqLkux9%2Bsx0ec6o7AiDI9OgmmAcTS93wWWm%2Bcd%2FvJGPAkhdHi7rubDvjRPHm5rjPToUgwhGivo7y8SUHSezvh82PAcQduYs5cGLajK8%2ByTHAgmT59VOzlobTC%2FEnW0QFTaGMIAxAFm3cnQsNzH2nkA3Sb4f13iH225IUnVPUewbQdFZR3WpIQQyoiKsKH%2BlfO6AcJUBYFeygg8bC5jT2BdVeSxEdmNzY19aYSPCPJrwI8L3XL9lBi35FZ6SL1mHgTd66q2bT1gyX5hkOSzznuGboqO2psU2J6r2bvHGIjtl%2BEAPMOi1kcUGOt4C4jyyE4bWBTLC96%2BZv4v26T62kbhXQwfPlFNtFb2KasAziAuOq4pch5Hj7E2N1I%2FD8voJxrSBX3pekvbRG3%2BxDVPtFM0so4fYbQoImkjolSrAFsb%2B11oQuTjmXU28MkWAdaAsi2JmnZQKy1%2B2pk9STIn%2BJ1JAnqvfR%2FnCe2SL34JAru2Cb%2BJwqJVswDwFpgBjcWFYRnBtNUOEN%2FRE0uaNjEyT0IeuSgBB6D%2B%2F3dz1jWdQyqMLQEhI5J%2BaTApqX4Wy0prXlkt2IAFqBcJktr%2BWH9JMakiDS8367LLG5ZFUz5Gf9fJO8rpJ3njvvHeUpHNFkDPIF89L6p0ndAhStWxh4uG4kbkaTJbL5MYw%2BJCbCzJbtkBlqOv3sYUMesw3Bl9jrHx28sdb4k3YBSvAJIG0KhZwzpWoXxJnONGeJUoMZrNt%2B6LEwE5yHCyOsocDsMmbsP6QBHra794mKVldkRU%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAS5Z5FDA4LJ6WJGBV%2F20250819%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250819T115318Z&X-Amz-Expires=43200&X-Amz-SignedHeaders=host&X-Amz-Signature=9dc590b3178b7476c0e77ecedc0bf0686db17001929c36b0b397b2348d189f41',
         requestId,
         ...videoMetadata,
       };
@@ -103,8 +103,10 @@ const Page: FC = () => {
       a.download = "video.mp4";
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      console.log(url)
+      debugger
+      // window.URL.revokeObjectURL(url);
+      // document.body.removeChild(a);
 
     } catch (error) {
       console.error("Local rendering failed:", error);

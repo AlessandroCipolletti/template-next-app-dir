@@ -2,7 +2,9 @@ import {
   deployFunction,
   deploySite,
   getOrCreateBucket,
+  deleteSite,
 } from '@remotion/lambda';
+import { getSites } from '@remotion/lambda/client';
 import dotenv from 'dotenv';
 import path from 'path';
 import { DISK, RAM, REGION, SITE_NAME, TIMEOUT } from './config.mjs';
@@ -59,6 +61,22 @@ console.log(
   bucketAlreadyExisted ? '(already existed)' : '(created)',
 );
 
+process.stdout.write('Cleaning previous sites... ');
+const { sites } = await getSites({ region: REGION });
+const relatedSites = sites.filter(
+  (s) =>
+    s.id === SITE_NAME ||
+    s.id.startsWith(`${SITE_NAME}-`) ||
+    s.id.startsWith(`${SITE_NAME}@`) ||
+    s.id.startsWith(`${SITE_NAME}_`),
+);
+
+for (const s of relatedSites) {
+  console.log(`\n  Deleting site: ${s.id}`);
+  await deleteSite({ region: REGION, siteId: s.id });
+}
+console.log('\nCleanup complete.');
+
 process.stdout.write('Deploying site... ');
 const { siteName } = await deploySite({
   bucketName,
@@ -66,7 +84,6 @@ const { siteName } = await deploySite({
   siteName: SITE_NAME,
   region: REGION,
 });
-
 console.log(siteName);
 
 console.log();

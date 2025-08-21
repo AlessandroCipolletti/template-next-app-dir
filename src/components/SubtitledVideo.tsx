@@ -4,10 +4,10 @@ import {
   useCurrentFrame,
   useVideoConfig,
   interpolate,
-  Video,
 } from 'remotion';
 import { Subtitle } from '../types/constants';
 import { loadFont, fontFamily } from '@remotion/google-fonts/Inter';
+import { SafeVideo } from './SafeVideo';
 
 export type SubtitledVideoProps = {
   videoSrc?: string;
@@ -84,7 +84,7 @@ export const SubtitledVideo: FC<SubtitledVideoProps> = ({
 
   return (
     <AbsoluteFill>
-      {videoSrc && <Video src={videoSrc} />}
+      {videoSrc && <SafeVideo src={videoSrc} />}
       <AbsoluteFill
         style={{
           justifyContent: 'flex-end',

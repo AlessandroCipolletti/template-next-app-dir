@@ -13,7 +13,7 @@ import {
   REMOTION_LAMBDA_REGION,
   REMOTION_LAMBDA_SITE_NAME,
   REMOTION_LAMBDA_TIMEOUT,
-} from './src/remotion/remotionConfig.mjs';
+} from './remotionConfig.mjs';
 
 console.log('Selected region:', REMOTION_LAMBDA_REGION);
 dotenv.config();

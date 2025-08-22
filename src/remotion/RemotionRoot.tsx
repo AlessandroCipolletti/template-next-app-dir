@@ -1,9 +1,6 @@
-import { Composition } from "remotion";
-import { SubtitledVideo } from "../components/SubtitledVideo";
-import {
-  COMP_NAME,
-  defaultMyCompProps,
-} from "../types/constants";
+import { Composition } from 'remotion';
+import { SubtitledVideo } from '../components/SubtitledVideo';
+import { COMP_NAME, defaultMyCompProps } from './constants';
 
 export const RemotionRoot: React.FC = () => {
   return (

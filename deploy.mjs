@@ -7,12 +7,18 @@ import {
 import { getSites } from '@remotion/lambda/client';
 import dotenv from 'dotenv';
 import path from 'path';
-import { DISK, RAM, REGION, SITE_NAME, TIMEOUT } from './config.mjs';
+import {
+  REMOTION_LAMBDA_DISK,
+  REMOTION_LAMBDA_RAM,
+  REMOTION_LAMBDA_REGION,
+  REMOTION_LAMBDA_SITE_NAME,
+  REMOTION_LAMBDA_TIMEOUT,
+} from './src/remotion/remotionConfig.mjs';
 
-console.log('Selected region:', REGION);
+console.log('Selected region:', REMOTION_LAMBDA_REGION);
 dotenv.config();
 
-if (!process.env.AWS_ACCESS_KEY_ID && !process.env.REMOTION_AWS_ACCESS_KEY_ID) {
+if (!process.env.REMOTION_AWS_ACCESS_KEY_ID) {
   console.log(
     'The environment variable "REMOTION_AWS_ACCESS_KEY_ID" is not set.',
   );
@@ -22,10 +28,7 @@ if (!process.env.AWS_ACCESS_KEY_ID && !process.env.REMOTION_AWS_ACCESS_KEY_ID) {
   );
   process.exit(0);
 }
-if (
-  !process.env.AWS_SECRET_ACCESS_KEY &&
-  !process.env.REMOTION_AWS_SECRET_ACCESS_KEY
-) {
+if (!process.env.REMOTION_AWS_SECRET_ACCESS_KEY) {
   console.log(
     'The environment variable "REMOTION_REMOTION_AWS_SECRET_ACCESS_KEY" is not set.',
   );
@@ -41,10 +44,10 @@ process.stdout.write('Deploying Lambda function... ');
 const { functionName, alreadyExisted: functionAlreadyExisted } =
   await deployFunction({
     createCloudWatchLogGroup: true,
-    memorySizeInMb: RAM,
-    region: REGION,
-    timeoutInSeconds: TIMEOUT,
-    diskSizeInMb: DISK,
+    memorySizeInMb: REMOTION_LAMBDA_RAM,
+    region: REMOTION_LAMBDA_REGION,
+    timeoutInSeconds: REMOTION_LAMBDA_TIMEOUT,
+    diskSizeInMb: REMOTION_LAMBDA_DISK,
   });
 console.log(
   functionName,
@@ -54,7 +57,7 @@ console.log(
 process.stdout.write('Ensuring bucket... ');
 const { bucketName, alreadyExisted: bucketAlreadyExisted } =
   await getOrCreateBucket({
-    region: REGION,
+    region: REMOTION_LAMBDA_REGION,
   });
 console.log(
   bucketName,
@@ -62,33 +65,37 @@ console.log(
 );
 
 process.stdout.write('Cleaning previous sites... ');
-const { sites } = await getSites({ region: REGION });
+const { sites } = await getSites({ region: REMOTION_LAMBDA_REGION });
 const relatedSites = sites.filter(
   (s) =>
-    s.id === SITE_NAME ||
-    s.id.startsWith(`${SITE_NAME}-`) ||
-    s.id.startsWith(`${SITE_NAME}@`) ||
-    s.id.startsWith(`${SITE_NAME}_`),
+    s.id === REMOTION_LAMBDA_SITE_NAME ||
+    s.id.startsWith(`${REMOTION_LAMBDA_SITE_NAME}-`) ||
+    s.id.startsWith(`${REMOTION_LAMBDA_SITE_NAME}@`) ||
+    s.id.startsWith(`${REMOTION_LAMBDA_SITE_NAME}_`),
 );
 
 for (const s of relatedSites) {
   console.log(`\n  Deleting site: ${s.id}`);
-  await deleteSite({ region: REGION, siteId: s.id });
+  await deleteSite({
+    bucketName,
+    region: REMOTION_LAMBDA_REGION,
+    siteId: s.id,
+  });
 }
 console.log('\nCleanup complete.');
 
 process.stdout.write('Deploying site... ');
-const { siteName } = await deploySite({
+const result = await deploySite({
   bucketName,
   entryPoint: path.join(process.cwd(), 'src', 'remotion', 'Entry.ts'),
-  siteName: SITE_NAME,
-  region: REGION,
+  siteName: REMOTION_LAMBDA_SITE_NAME,
+  region: REMOTION_LAMBDA_REGION,
 });
-console.log(siteName);
+console.log({ result });
 
 console.log();
 console.log('You now have everything you need to render videos!');
 console.log('Re-run this command when:');
-console.log('  1) you changed the video template');
+console.log('  1) you changed the video rendering code');
 console.log('  2) you changed config.mjs');
 console.log('  3) you upgraded Remotion to a newer version');

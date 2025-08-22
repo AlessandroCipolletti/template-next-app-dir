@@ -7,7 +7,7 @@ async function renderVideoLocally(inputProps, outputPath, progressPath) {
   try {
     // Bundle the Remotion composition
     const bundled = await bundle({
-      entryPoint: path.join(process.cwd(), 'src/remotion/Entry.ts'),
+      entryPoint: path.join(process.cwd(), 'src/videoRenderingEngine/Entry.ts'),
       webpackOverride: (config) => config,
     });
 

@@ -62,7 +62,7 @@ const Page: FC = () => {
 
       console.time('render');
       // Start the render process
-      const promise = fetch('/api/render/local', {
+      const promise = fetch('/api/videoRendering/local', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const Page: FC = () => {
       const pollProgress = async () => {
         try {
           const progressResponse = await fetch(
-            `/api/render/local/progress?requestId=${requestId}`,
+            `/api/videoRendering/local/progress?requestId=${requestId}`,
           );
           if (progressResponse.ok) {
             const progress = await progressResponse.json();
@@ -147,7 +147,7 @@ const Page: FC = () => {
         ...videoMetadata,
       };
 
-      const result = await fetch('/api/lambda/render', {
+      const result = await fetch('/api/videoRendering/lambda', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const Page: FC = () => {
   const handleCheckLambdaProgress = useCallback(async () => {
     if (!renderId || !bucketName) return;
 
-    const result = await fetch('/api/lambda/progress', {
+    const result = await fetch('/api/videoRendering/lambda/progress', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

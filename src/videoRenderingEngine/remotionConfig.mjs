@@ -6,7 +6,7 @@ export const REMOTION_LAMBDA_REGION = 'eu-west-3';
 
 export const REMOTION_LAMBDA_SITE_NAME = 'arcads-video-rendering-engine';
 
-export const REMOTION_LAMBDA_CONCURRENCY = 40;
+export const REMOTION_LAMBDA_CONCURRENCY = 35;
 
 export const REMOTION_LAMBDA_RAM = 3009;
 export const REMOTION_LAMBDA_DISK = 10240;

@@ -9,7 +9,7 @@
     "lint": "next lint",
     "remotion": "remotion studio",
     "render": "remotion render",
-    "deploy": "node ./src/remotion/remotionDeploy.mjs"
+    "deploy": "node ./src/videoRenderingEngine/remotionDeploy.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.339",

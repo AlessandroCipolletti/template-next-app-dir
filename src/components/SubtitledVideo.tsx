@@ -5,7 +5,7 @@ import {
   useVideoConfig,
   interpolate,
 } from 'remotion';
-import { Subtitle } from '../remotion/constants';
+import { Subtitle } from '../videoRenderingEngine/constants';
 import { loadFont, fontFamily } from '@remotion/google-fonts/Inter';
 import { SafeVideo } from './SafeVideo';
 

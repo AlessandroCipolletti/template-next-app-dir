@@ -5,7 +5,7 @@ import {
   ProgressResponse,
   RenderRequest,
 } from '../types/schema';
-import { CompositionProps } from '../remotion/constants';
+import { CompositionProps } from '../videoRenderingEngine/constants';
 import { ApiResponse } from '../helpers/api-response';
 
 const makeRequest = async <Res>(

@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { RenderRequestSchema } from '../../../../remotion/constants';
+import { RenderRequestSchema } from '../../../../videoRenderingEngine/constants';
 
 const execAsync = promisify(exec);
 

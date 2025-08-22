@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CompositionProps } from '../remotion/constants';
+import { CompositionProps } from '../videoRenderingEngine/constants';
 
 export const RenderRequest = z.object({
   id: z.string(),

@@ -11,7 +11,7 @@ import {
   REMOTION_LAMBDA_RAM,
   REMOTION_LAMBDA_SITE_NAME,
   REMOTION_LAMBDA_TIMEOUT,
-} from '../../../../remotion/remotionConfig.mjs';
+} from '../../../../videoRenderingEngine/remotionConfig.mjs';
 import { RenderRequest } from '../../../../types/schema';
 
 export const POST = executeApi<RenderMediaOnLambdaOutput, typeof RenderRequest>(

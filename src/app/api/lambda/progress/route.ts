@@ -10,7 +10,7 @@ import {
   REMOTION_LAMBDA_TIMEOUT,
 } from '../../../../videoRenderingEngine/remotionConfig.mjs';
 import { executeApi } from '../../../../helpers/api-response';
-import { ProgressRequest, ProgressResponse } from '../../../../types/schema';
+import { ProgressRequest, ProgressResponse } from '../../../../helpers/schema';
 
 export const POST = executeApi<ProgressResponse, typeof ProgressRequest>(
   ProgressRequest,

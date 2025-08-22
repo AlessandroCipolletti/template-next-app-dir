@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Player, PlayerRef } from '@remotion/player';
 import text_subtitles from './text_subtitles.json';
-import { SubtitledVideo } from '../components/SubtitledVideo';
+import { SubtitledVideo } from '../videoRenderingEngine/components/SubtitledVideo';
 import { COMP_NAME, Subtitle } from '../videoRenderingEngine/constants';
 
 const VIDEO_URL =

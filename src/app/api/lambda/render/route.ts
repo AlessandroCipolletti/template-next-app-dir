@@ -12,7 +12,7 @@ import {
   REMOTION_LAMBDA_SITE_NAME,
   REMOTION_LAMBDA_TIMEOUT,
 } from '../../../../videoRenderingEngine/remotionConfig.mjs';
-import { RenderRequest } from '../../../../types/schema';
+import { RenderRequest } from '../../../../helpers/schema';
 
 export const POST = executeApi<RenderMediaOnLambdaOutput, typeof RenderRequest>(
   RenderRequest,

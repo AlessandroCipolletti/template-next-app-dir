@@ -1,67 +1,71 @@
-'use client'
-import { FC, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
-import { Player, PlayerRef } from '@remotion/player'
-import text_subtitles from './text_subtitles.json'
-import { SubtitledVideo } from '../components/SubtitledVideo'
-import { Subtitle } from '../types/constants'
+'use client';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { Player, PlayerRef } from '@remotion/player';
+import text_subtitles from './text_subtitles.json';
+import { SubtitledVideo } from '../components/SubtitledVideo';
+import { COMP_NAME, Subtitle } from '../types/constants';
 
+const VIDEO_URL =
+  'https://argoseyes.s3.eu-west-3.amazonaws.com/development/test-subtitles.mp4?response-content-disposition=inline&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEL7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCWV1LXdlc3QtMyJHMEUCICbNhG%2BFa8h6BzSXk8FmhCGEKgK%2BtB%2FHEy2I%2F2l2wHJ9AiEAmwIs723roK9uaYqeLUO%2FTOxWMXuCOLC4jqiONGmyfncqzAMIFhABGgwyMDE0NTQ4NTIxNTIiDLBqBzhT3bPkVIMCyyqpA6UhZ8m3Wr6OBlP%2FgB%2FzC4PtI3cWEzfucdG%2BfCZDAgVVlZb97BH9bCMMBc5%2FtfYZVw6%2BEmsoUT0JLS6KwXJ0u81TlP3DtO7ZRb95p5uf0qRHttfjqfaf5g6hzxPXriNmGZcENi658UnKjQp6Z8%2FxqCg4vE0rkP7HZ2kV1BF7oiHhSNi1qQ1ZVQ6ORUjDKN2FAGQAOH%2F2%2FZRqsAuQXqpSsCJN0Lu45bEdaPv0FB674UI%2FQCGNqFKEsz8vErwBMJ8vsX9L9Au2RXkG88xg%2BVqZ%2FCaU6ncr4SDd%2F3dkw4YKpwj2OqKLJYN7ny%2BAg3F11e3F%2FBzddDb%2BhdX9ZC6zuHxsdcE8WEtJklUO5q4d3Ax4ptrnlWK2qTYzk1fM5ftXrOHQ0%2FqSnAsh0r2btrXAGZsbNHyesAnQkwa%2Bw42DpFWi1KgdRLMumoyPYceDZaSHmSC3jtwSOiKbWp8ueQwAWse32iT%2FyBCpKPB5G5XrFQPJSUVgwf4F4X%2Bb6xqZSWtNc9aE84wx%2BDVnlMQaZEJtPPvw5XuJ5kIoT9b70Ly9jkbZ9Wt2ZHf78v2pi%2FqyMIPcocUGOt4CZakMGMMMlKHXGX4A%2BMUME8qJenbv4dm3VLdCeV5i%2Fj0U3aceWI8INMWztPeMpdPb10FoDlP25jmH%2F%2BSKh6WjGJcQlVR2cI2JcXK1gK%2Bn06LaOj28daESo6l9NRBG9ifRdETtjjq2060x92V3E3o90WKEDvZbBkwrDnz2AQ3kqlVueIRxoOzOkoydDoYDiiAcX3Epb9q3SgrNyeuBi5wjM3MoqavKyDJGcMkze50%2BhuFHyLMP9TKZD08hwx8P4vv44ugwBjhARUpgoHSacA6yk%2FgjwXN0eD%2BQ9%2FBmLnXpBgogu2COVeVuUq8qYuF4R%2F1df2F1xGdxjmmP1vyNacS03vdu2qafPabqBVAHLwb9uxFiViPTW4EbzaLwki%2F%2B04KEPBTo608REK2B1JMe%2BsZwaLIyxu8toHs8V901cfYNuVpqUjCoXtnP28oRF4FghcnByvPITAvcgDwnFcD3rYA%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAS5Z5FDA4GM7LESFH%2F20250822%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250822T131829Z&X-Amz-Expires=43200&X-Amz-SignedHeaders=host&X-Amz-Signature=1c007a4ec5c8e76b0ce6a5268c31e0cb0205ee3d84cbda83cff946f6133c984d';
 
-const subtitles: Subtitle[] = text_subtitles.words.filter((w) => w.text.trim() !== '')
+const subtitles: Subtitle[] = text_subtitles.words.filter(
+  (w) => w.text.trim() !== '',
+);
 
-const fps = 30
+const fps = 30;
 
 const Page: FC = () => {
-  const player = useRef<PlayerRef>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const [videoSrc, setVideoSrc] = useState<string | null>(null)
-  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const player = useRef<PlayerRef>(null);
   const [meta, setMeta] = useState<{
-    duration: number
-    width: number
-    height: number
-  } | null>(null)
-  const [frame, setFrame] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  console.info(videoFile)
+    duration: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [frame, setFrame] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isRenderingLocal, setIsRenderingLocal] = useState(false);
+  const [isRenderingLambda, setIsRenderingLambda] = useState(false);
+  const [bucketName, setBucketName] = useState<string | null>(null);
+  const [renderId, setRenderId] = useState<string | null>(null);
 
-  const durationInFrames = meta ? Math.ceil(meta.duration * fps) : 0
-
-  const [isRendering, setIsRendering] = useState(false);
+  const durationInFrames = meta ? Math.ceil(meta.duration * fps) : 0;
 
   const handleLocalRender = async () => {
-    setIsRendering(true);
+    setIsRenderingLocal(true);
     try {
       const requestId = `${Date.now()}`;
       let timeoutId: NodeJS.Timeout | null = null;
-      
+
       // Get video metadata for dynamic parameters
-      const videoMetadata = meta ? {
-        width: meta.width,
-        height: meta.height,
-        durationInFrames: Math.ceil(meta.duration * fps),
-        fps: fps
-      } : {
-        width: 1080,
-        height: 1920,
-        durationInFrames: 120 * 30,
-        fps: 30
-      };
-      
+      const videoMetadata = meta
+        ? {
+            width: meta.width,
+            height: meta.height,
+            durationInFrames: Math.ceil(meta.duration * fps),
+            fps: fps,
+          }
+        : {
+            width: 1080,
+            height: 1920,
+            durationInFrames: 120 * 30,
+            fps: 30,
+          };
+
       // Prepare the request data with dynamic parameters
       const requestData = {
         subtitles,
-        videoSrc: 'https://argoseyes.s3.eu-west-3.amazonaws.com/development/situations/804b04f6-bf3d-4e54-9ee5-84be0caa0e18.mp4?response-content-disposition=inline&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHQaCWV1LXdlc3QtMyJHMEUCIEvZXB1vqKSqkMlh2CPuc9Nm9zQchU8RRM9dtzlsjXfHAiEAgy8ddxOx0aVU4WMlDW1I4R3Iq1ot%2BKoaNYnSNF64Oo0q1QMIvf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARABGgwyMDE0NTQ4NTIxNTIiDDIMfls8AtAeZ6EugiqpA8xFldvAyHMM1EIzoJY%2Bx1hVZIZyosgns93VI3YWau8qGqzVz4rLStavrHVQCU17ZluPysMg1eFaK9cUdqsy3OiowzThEBJwW%2FBin%2B7siWochy5jjLwOB2aqa0he153hVT4%2FCbgoi8nos4gE%2BVAaqAPy91CvNXaZC5yqCjA%2F%2BxkHO7U09bbFdYxQsBxaK33MD3Pq%2BnDIsx%2Fm863NcEdMgkYrwWsbbkqTJIGaxSnVMcPY7NtphtWrv8nZtH%2BmWQG57pKjJfwovNqLkux9%2Bsx0ec6o7AiDI9OgmmAcTS93wWWm%2Bcd%2FvJGPAkhdHi7rubDvjRPHm5rjPToUgwhGivo7y8SUHSezvh82PAcQduYs5cGLajK8%2ByTHAgmT59VOzlobTC%2FEnW0QFTaGMIAxAFm3cnQsNzH2nkA3Sb4f13iH225IUnVPUewbQdFZR3WpIQQyoiKsKH%2BlfO6AcJUBYFeygg8bC5jT2BdVeSxEdmNzY19aYSPCPJrwI8L3XL9lBi35FZ6SL1mHgTd66q2bT1gyX5hkOSzznuGboqO2psU2J6r2bvHGIjtl%2BEAPMOi1kcUGOt4C4jyyE4bWBTLC96%2BZv4v26T62kbhXQwfPlFNtFb2KasAziAuOq4pch5Hj7E2N1I%2FD8voJxrSBX3pekvbRG3%2BxDVPtFM0so4fYbQoImkjolSrAFsb%2B11oQuTjmXU28MkWAdaAsi2JmnZQKy1%2B2pk9STIn%2BJ1JAnqvfR%2FnCe2SL34JAru2Cb%2BJwqJVswDwFpgBjcWFYRnBtNUOEN%2FRE0uaNjEyT0IeuSgBB6D%2B%2F3dz1jWdQyqMLQEhI5J%2BaTApqX4Wy0prXlkt2IAFqBcJktr%2BWH9JMakiDS8367LLG5ZFUz5Gf9fJO8rpJ3njvvHeUpHNFkDPIF89L6p0ndAhStWxh4uG4kbkaTJbL5MYw%2BJCbCzJbtkBlqOv3sYUMesw3Bl9jrHx28sdb4k3YBSvAJIG0KhZwzpWoXxJnONGeJUoMZrNt%2B6LEwE5yHCyOsocDsMmbsP6QBHra794mKVldkRU%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAS5Z5FDA4LJ6WJGBV%2F20250819%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250819T115318Z&X-Amz-Expires=43200&X-Amz-SignedHeaders=host&X-Amz-Signature=9dc590b3178b7476c0e77ecedc0bf0686db17001929c36b0b397b2348d189f41',
+        videoSrc: VIDEO_URL,
         requestId,
         ...videoMetadata,
       };
-      
+
+      console.time('render');
       // Start the render process
-      const promise = fetch("/api/render/local", {
-        method: "POST",
+      const promise = fetch('/api/render/local', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestData),
       });
@@ -69,11 +73,13 @@ const Page: FC = () => {
       // Poll for progress while rendering
       const pollProgress = async () => {
         try {
-          const progressResponse = await fetch(`/api/render/local/progress?requestId=${requestId}`);
+          const progressResponse = await fetch(
+            `/api/render/local/progress?requestId=${requestId}`,
+          );
           if (progressResponse.ok) {
             const progress = await progressResponse.json();
-            console.log(`Rendering progress: ${progress.percentage}%`);
-            
+            console.info(`Rendering progress: ${progress.percentage}%`);
+
             // Continue polling if not complete
             if (progress.progress < 1) {
               timeoutId = setTimeout(pollProgress, 5_000);
@@ -88,6 +94,9 @@ const Page: FC = () => {
       pollProgress();
 
       const response = await promise;
+
+      console.timeEnd('render');
+
       if (timeoutId) clearTimeout(timeoutId);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -95,77 +104,136 @@ const Page: FC = () => {
 
       // Get the video blob
       const videoBlob = await response.blob();
-      
+
       // Create a download link
       const url = window.URL.createObjectURL(videoBlob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "video.mp4";
+      a.download = 'video.mp4';
       document.body.appendChild(a);
       a.click();
-      console.log(url)
-      debugger
+      console.info(url);
       // window.URL.revokeObjectURL(url);
       // document.body.removeChild(a);
-
     } catch (error) {
-      console.error("Local rendering failed:", error);
-      alert("Failed to render video locally. Check console for details.");
+      console.error('Local rendering failed:', error);
+      alert('Failed to render video locally. Check console for details.');
     } finally {
-      setIsRendering(false);
+      setIsRenderingLocal(false);
     }
   };
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const handleLambdaRender = async () => {
+    setIsRenderingLambda(true);
+    try {
+      const videoMetadata = meta
+        ? {
+            width: meta.width,
+            height: meta.height,
+            durationInFrames: Math.ceil(meta.duration * fps),
+            fps: fps,
+          }
+        : {
+            width: 1080,
+            height: 1920,
+            durationInFrames: 120 * 30,
+            fps: 30,
+          };
 
-    setVideoFile(file)
-    const url = URL.createObjectURL(file)
-    const vid = document.createElement('video')
+      // Prepare the request data with dynamic parameters
+      const inputProps = {
+        subtitles,
+        videoSrc: VIDEO_URL,
+        ...videoMetadata,
+      };
 
-    vid.preload = 'metadata'
-    vid.src = url
+      const result = await fetch('/api/lambda/render', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: COMP_NAME,
+          inputProps,
+        }),
+      });
+      console.time('render');
+      const resultJson = await result.json();
+      console.log(resultJson);
+
+      setBucketName(resultJson.data.bucketName);
+      setRenderId(resultJson.data.renderId);
+    } catch (error) {
+      console.error('Lambda rendering failed:', error);
+      alert('Failed to render video lambda. Check console for details.');
+    } finally {
+      setIsRenderingLambda(false);
+    }
+  };
+
+  const handleCheckLambdaProgress = useCallback(async () => {
+    if (!renderId || !bucketName) return;
+
+    const result = await fetch('/api/lambda/progress', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: renderId,
+        bucketName: bucketName,
+      }),
+    });
+    const resultJson = await result.json();
+
+    if (resultJson.data.type === 'done') {
+      console.timeEnd('render');
+      console.log('done: ', resultJson.data.url);
+    } else {
+      console.log('progress:', resultJson.data.progress);
+    }
+  }, [renderId, bucketName]);
+
+  useEffect(() => {
+    handleCheckLambdaProgress();
+    const intervalId = setInterval(handleCheckLambdaProgress, 5_000);
+    return () => clearInterval(intervalId);
+  }, [handleCheckLambdaProgress]);
+
+  useEffect(() => {
+    const vid = document.createElement('video');
+
+    vid.preload = 'metadata';
+    vid.src = VIDEO_URL;
     vid.onloadedmetadata = () => {
       setMeta({
         duration: vid.duration,
         width: vid.videoWidth,
         height: vid.videoHeight,
-      })
-      setVideoSrc(url)
-      setFrame(0)
-    }
-  }
+      });
+      setFrame(0);
+    };
+  }, []);
 
   const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = Number(e.target.value)
-    setFrame(f)
-    player.current?.seekTo(f)
-  }
+    const f = Number(e.target.value);
+    setFrame(f);
+    player.current?.seekTo(f);
+  };
 
   const togglePlayPause = () => {
     if (isPlaying) {
-      player.current?.pause()
-      setIsPlaying(false)
+      player.current?.pause();
+      setIsPlaying(false);
     } else {
-      player.current?.play()
-      setIsPlaying(true)
+      player.current?.play();
+      setIsPlaying(true);
     }
-  }
+  };
 
   return (
     <div style={{ padding: 32 }}>
-      {!videoSrc && (
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="video/*"
-          onChange={handleFile}
-          style={{ marginBottom: 24 }}
-        />
-      )}
-
-      {videoSrc && meta && (
+      {meta && (
         <>
           <div style={{ maxWidth: '300px' }}>
             <Player
@@ -175,7 +243,7 @@ const Page: FC = () => {
               fps={fps}
               compositionWidth={meta.width}
               compositionHeight={meta.height}
-              inputProps={{ subtitles, videoSrc }}
+              inputProps={{ subtitles, videoSrc: VIDEO_URL }}
               // controls
               style={{ width: '100%' }}
             />
@@ -197,12 +265,13 @@ const Page: FC = () => {
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
-          
-          <button
-            onClick={handleLocalRender}
-            disabled={isRendering}
-          >
-            {isRendering ? "Rendering locally..." : "Render locally"}
+
+          <button onClick={handleLocalRender} disabled={isRenderingLocal}>
+            {isRenderingLocal ? 'Rendering locally...' : 'Render locally'}
+          </button>
+
+          <button onClick={handleLambdaRender} disabled={isRenderingLambda}>
+            {isRenderingLambda ? 'Rendering lambda...' : 'Render lambda'}
           </button>
 
           <input
@@ -216,7 +285,7 @@ const Page: FC = () => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default dynamic(() => Promise.resolve(Page), { ssr: false })
+export default dynamic(() => Promise.resolve(Page), { ssr: false });

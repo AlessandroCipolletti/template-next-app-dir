@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
     await fs.writeFile(inputPropsPath, JSON.stringify(inputProps, null, 2));
 
     // Run the rendering script with file path instead of JSON string
-    const scriptPath = path.join(process.cwd(), 'scripts/render-local.js');
+    const scriptPath = path.join(
+      process.cwd(),
+      'src/videoRenderingEngine/scripts/render-locally.js',
+    );
     await execAsync(
       `node ${scriptPath} '${inputPropsPath}' '${outputPath}' '${progressPath}'`,
     );

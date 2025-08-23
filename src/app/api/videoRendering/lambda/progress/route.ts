@@ -9,11 +9,11 @@ import {
   REMOTION_LAMBDA_REGION,
   REMOTION_LAMBDA_TIMEOUT,
 } from '../../../../../videoRenderingEngine/remotionConfig.mjs';
-import { executeApi } from '../../../../../helpers/api-response';
+import { executeApi } from '../../../../../videoRenderingEngine/helpers/api-response';
 import {
   ProgressRequest,
   ProgressResponse,
-} from '../../../../../helpers/schema';
+} from '../../../../../videoRenderingEngine/helpers/schema';
 
 export const POST = executeApi<ProgressResponse, typeof ProgressRequest>(
   ProgressRequest,

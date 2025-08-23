@@ -3,7 +3,7 @@ import {
   renderMediaOnLambda,
   speculateFunctionName,
 } from '@remotion/lambda/client';
-import { executeApi } from '../../../../helpers/api-response';
+import { executeApi } from '../../../../videoRenderingEngine/helpers/api-response';
 import {
   REMOTION_LAMBDA_CONCURRENCY,
   REMOTION_LAMBDA_DISK,
@@ -12,7 +12,7 @@ import {
   REMOTION_LAMBDA_SITE_NAME,
   REMOTION_LAMBDA_TIMEOUT,
 } from '../../../../videoRenderingEngine/remotionConfig.mjs';
-import { RenderRequest } from '../../../../helpers/schema';
+import { RenderRequest } from '../../../../videoRenderingEngine/helpers/schema';
 
 export const POST = executeApi<RenderMediaOnLambdaOutput, typeof RenderRequest>(
   RenderRequest,
